@@ -1,0 +1,108 @@
+# Služby na status.wdd.systems a jejich monitory v UptimeRobotu.
+#
+# monitor  = monitor v UptimeRobotu: přesný název z dashboardu, nebo číselné ID (konec adresy monitoru).
+#            ID přežije přejmenování; log Actions u každého názvu vypíše jeho ID. 0 = monitor není, část se nezobrazí.
+# zdroj    = "mgmt": místo UptimeRobotu kontroly z data/zalohy.json (zapisuje status-zalohy na mgmt, repo wdd-ops)
+# pravidlo = "vse":       služba funguje, jen když fungují všechny části (výpadek kterékoli části je výpadek služby)
+#            "kterakoli": služba funguje, když funguje aspoň jedna část (DNS: stačí jeden jmenný server, SLA 2.1)
+# sla      = true: služba má garantovanou dostupnost 99,5 % (SLA 2.1) a ukazuje se v tabulce měsíční dostupnosti
+# od       = den, od kterého se služba měří. Dřív než monitory všech jejích částí běží, nastavit nejde.
+#            Weby, e-mail, DNS a panel od 1. 8. 2026 (účinnost SLA): historie zpětně z UptimeRobotu (data drží 12 měsíců).
+#            Monitory vznikly 3. 5.–6. 7. 2026 a nebyly pozastavené (build.py --monitory, 7. 11. 2026). Zálohy jen od kontrol na mgmt.
+# stav_ok, stav_vypadek, vypadek = nepovinné texty místo „V provozu“, „Výpadek“ a „výpadek 12 min“
+# procenta = false: u pruhu neukazovat dostupnost v procentech (u záloh nedává smysl)
+# pruh     = false: místo 90denního pruhu jen čas a výsledek poslední kontroly (zálohy)
+#
+# Veřejně jen služby, nikdy domény klientů: názvy a popisy tady jsou to jediné, co se ze služby ukáže.
+
+casove_pasmo = "Europe/Prague"
+
+[[sluzba]]
+klic = "weby"
+nazev = "Weby"
+popis = "Webový server odpovídá na požadavky HTTP a HTTPS."
+pravidlo = "vse"
+sla = true
+od = 2026-08-01
+
+  [[sluzba.cast]]
+  klic = "web"
+  nazev = "Webový server"
+  monitor = "wdd.cz"
+
+[[sluzba]]
+klic = "email"
+nazev = "E-mail"
+popis = "Poštovní server přijímá a odesílá poštu a zpřístupňuje schránky."
+pravidlo = "vse"
+sla = true
+od = 2026-08-01
+
+  [[sluzba.cast]]
+  klic = "smtp"
+  nazev = "Odesílání (SMTP)"
+  monitor = "SMTP mail.wdd.systems:465"
+
+  [[sluzba.cast]]
+  klic = "imap"
+  nazev = "Schránky (IMAP)"
+  monitor = "IMAP mail.wdd.systems"
+
+[[sluzba]]
+klic = "dns"
+nazev = "DNS"
+popis = "Jmenné servery ve dvou datových centrech. Služba funguje, dokud odpovídá aspoň jeden."
+pravidlo = "kterakoli"
+sla = true
+od = 2026-08-01
+
+  [[sluzba.cast]]
+  klic = "ns1"
+  nazev = "ns1.wdd.systems (Falkenstein)"
+  monitor = "NS1.wdd.systems"
+
+  [[sluzba.cast]]
+  klic = "ns2"
+  nazev = "ns2.wdd.systems (Helsinky)"
+  monitor = "NS2.wdd.systems"
+
+[[sluzba]]
+klic = "zalohy"
+nazev = "Zálohy"
+popis = "Noční zálohy webů, databází a schránek do jiného datového centra. Kontrolujeme je dvakrát denně."
+pravidlo = "vse"
+sla = false
+od = 2026-11-05
+stav_ok = "V pořádku"
+stav_vypadek = "Zálohy mají potíže"
+vypadek = "potíže se zálohou"
+procenta = false
+pruh = false      # bez 90denního pruhu, jen poslední kontrola (Enhance drží zálohy 7 dní, starší historie není)
+
+  [[sluzba.cast]]
+  klic = "nocni"
+  nazev = "Noční záloha"
+  zdroj = "mgmt"
+
+[[sluzba]]
+klic = "panel"
+nazev = "Ovládací panel"
+popis = "Administrace webů, e-mailů a DNS."
+pravidlo = "vse"
+sla = false
+od = 2026-08-01
+
+  [[sluzba.cast]]
+  klic = "panel"
+  nazev = "Ovládací panel"
+  monitor = "Enhance Panel - admin.wdd.systems"
+
+# Opravy měření: okno, které monitoring hlásil jako výpadek, ale výpadek to nebyl
+# (např. falešný poplach z jedné lokality UptimeRobotu). Okno se z výpočtů vyřadí úplně.
+# Oprava je veřejná (repozitář je veřejný), proto vždy s důvodem.
+#
+# [[oprava]]
+# cast = "email/imap"
+# od = "2026-11-20 03:12"
+# do = "2026-11-20 03:15"
+# duvod = "Falešný poplach monitoringu z jedné lokality, schránky fungovaly."

@@ -1,0 +1,13 @@
+{
+  "popis": "Kontroly čerstvosti záloh webů z mgmt: [UTC epoch, ok 1/0, počet webů, počet problémů]. Zapisuje status-zalohy (repo wdd-ops), čte build.py.",
+  "kontroly": [
+    [1793950193, 1, 53, 0],
+    [1793956501, 1, 53, 0],
+    [1793999702, 1, 54, 0],
+    [1794042901, 1, 54, 0],
+    [1794086101, 1, 54, 0],
+    [1794129301, 1, 54, 0],
+    [1794172501, 1, 54, 0],
+    [1794215701, 1, 54, 0]
+  ]
+}

@@ -1,0 +1,107 @@
+name: Stav služeb
+
+on:
+  schedule:
+    - cron: "3-58/5 * * * *"  # jen záloha: GitHub plán spouští nespolehlivě (5. 11. dva běhy za 17 h);
+                              # pravidelně spouští cron-job.org přes API (workflow_dispatch), viz README
+    - cron: "17 3 * * *"    # jednou denně navíc udrží plán zapnutý (ve veřejném repozitáři ho GitHub po 60 dnech bez aktivity vypne)
+  push:
+    branches: [main]
+    paths-ignore: ["README.md"]
+  workflow_dispatch:
+    inputs:
+      monitory:
+        description: "Jen diagnostika monitorů (vznik, pauzy) do logu, nic nestaví"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write   # commit data/vypadky.json
+  pages: write
+  id-token: write
+  actions: write    # udržení plánu
+
+concurrency:
+  group: status
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    outputs:
+      ready: ${{ steps.key.outputs.ready }}
+    steps:
+      - name: Je zadaný API klíč?
+        id: key
+        env:
+          KEY: ${{ secrets.UPTIMEROBOT_API_KEY }}
+        run: |
+          if [ -z "$KEY" ]; then
+            echo "::notice::Secret UPTIMEROBOT_API_KEY zatím není, nic nestavím ani nenasazuji."
+            echo "ready=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=1" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v6
+        if: steps.key.outputs.ready == '1'
+
+      - uses: actions/setup-python@v6
+        if: steps.key.outputs.ready == '1'
+        with:
+          python-version: "3.12"
+
+      - run: pip install --disable-pip-version-check markdown==3.7
+        if: steps.key.outputs.ready == '1'
+
+      - name: Kontrola výpočtů
+        if: steps.key.outputs.ready == '1'
+        run: python3 -m unittest discover tests
+
+      - name: Diagnostika monitorů
+        if: steps.key.outputs.ready == '1' && inputs.monitory
+        env:
+          UPTIMEROBOT_API_KEY: ${{ secrets.UPTIMEROBOT_API_KEY }}
+        run: python3 build.py --monitory
+
+      - name: Načíst UptimeRobot a postavit web
+        if: steps.key.outputs.ready == '1' && !inputs.monitory
+        env:
+          UPTIMEROBOT_API_KEY: ${{ secrets.UPTIMEROBOT_API_KEY }}
+          UPTIMEROBOT_API: ${{ vars.UPTIMEROBOT_API }}
+        run: python3 build.py --fetch
+
+      - name: Uložit nové ukončené výpadky
+        if: steps.key.outputs.ready == '1' && !inputs.monitory
+        run: |
+          if git diff --quiet -- data/vypadky.json; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/vypadky.json
+          git commit -m "data: ukončené výpadky"
+          git pull --rebase
+          git push
+
+      - name: Udržet plán zapnutý
+        if: steps.key.outputs.ready == '1' && github.event.schedule == '17 3 * * *'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/status.yml/enable"
+
+      - uses: actions/upload-pages-artifact@v5
+        if: steps.key.outputs.ready == '1' && !inputs.monitory
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.ready == '1' && !inputs.monitory
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
