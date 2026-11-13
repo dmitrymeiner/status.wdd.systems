@@ -8,6 +8,9 @@ from zoneinfo import ZoneInfo
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import build  # noqa: E402
 
+# Vymyšlená služba X má v testech i dlouhé výpadky; varování by se v Actions ukázala jako anotace běhu.
+build.warn = lambda msg: None
+
 TZ = ZoneInfo("Europe/Prague")
 
 

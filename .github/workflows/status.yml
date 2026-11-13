@@ -98,10 +98,21 @@ jobs:
     needs: build
     if: needs.build.outputs.ready == '1' && !inputs.monitory
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment2.outputs.page_url }}
     steps:
+      # GitHub občas nasazení odmítne (Pages 500, nevydaný id-token) a další pokus projde.
+      # Jeden opakovaný pokus po 30 s, aby jednotlivé zaškobrtnutí neposílalo e-mail o chybě.
       - id: deployment
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+
+      - name: Počkat před druhým pokusem
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 30
+
+      - id: deployment2
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v5
