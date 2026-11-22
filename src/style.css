@@ -47,7 +47,9 @@ strong { font-weight: 650; }
 .brand { display: inline-flex; align-items: center; gap: 0.7rem; color: var(--ink); text-decoration: none; }
 /* Logo WD&D (listopad 2026): písmena v barvě textu, čtverec černý, na status stránce v barvě stavu. */
 /* viewBox má po stranách okraj 8 jednotek, aby se hrany písmen (oblouk posledního D) nikdy neořízly; záporný okraj ho vrací, rozměry hlavičky zůstávají. */
-.brand .logo { display: block; height: 1.05rem; width: auto; margin: 0 calc(-1.05rem * 8 / 100.25); fill: var(--ink); overflow: visible; }
+.brand .logo { display: block; height: 1rem; width: auto; margin: 0 calc(-1rem * 8 / 100.25); fill: var(--ink); overflow: visible; }
+/* Výška 16 px dává celé pixely při 100, 110, 125, 150 i 200 % (horní a dolní hrana písmen ostré). Čtverec se kreslí na celé pixely, bez šedého lemu. */
+.brand .logo .sq { shape-rendering: crispEdges; }
 .brand .logo .sq { fill: var(--lv, var(--ink)); }
 .brand span { font-size: 0.85rem; color: var(--muted); padding-left: 0.7rem; border-left: 1px solid var(--rule); line-height: 1.1; }
 .bar nav { display: flex; flex-wrap: wrap; gap: 0.25rem; font-size: 0.9rem; }
