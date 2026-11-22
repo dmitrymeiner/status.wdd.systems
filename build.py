@@ -11,6 +11,7 @@ a s --fetch aktuální data z UptimeRobotu (UPTIMEROBOT_API_KEY, volitelně UPTI
 import argparse
 import base64
 import calendar
+import hashlib
 import html
 import json
 import math
@@ -31,6 +32,8 @@ import uptimerobot
 
 ROOT = Path(__file__).resolve().parent
 SRC, OUT = ROOT / "src", ROOT / "dist"
+# Verze souborů v odkazech (obsahový hash): prohlížeč s cache hned načte nový vzhled.
+ASSET_V = {n: hashlib.sha256((SRC / n).read_bytes()).hexdigest()[:10] for n in ("style.css", "status.js")}
 STORE = ROOT / "data" / "vypadky.json"
 BACKUPS = ROOT / "data" / "zalohy.json"   # kontroly záloh, zapisuje status-zalohy na mgmt (repo wdd-ops)
 SITE_URL = "https://status.wdd.systems"
@@ -647,7 +650,7 @@ def page(title, desc, main, current, level, generated, base=""):
 <title>{title}</title>
 <meta name="description" content="{esc(desc)}">
 <link rel="icon" href="{favicon(level)}">
-<link rel="stylesheet" href="{base}style.css">
+<link rel="stylesheet" href="{base}style.css?v={ASSET_V['style.css']}">
 <link rel="alternate" type="application/atom+xml" title="Incidenty a údržba WD&amp;D" href="{base}feed.xml">
 </head>
 <body data-generated="{generated * 1000}">
@@ -656,7 +659,7 @@ def page(title, desc, main, current, level, generated, base=""):
 {main}
 </main>
 <footer class="foot"><div class="foot-in"><p>{PROVIDER}</p><p>{CONTACT}</p><p>Stránka běží mimo naše servery, nepoužívá cookies a nenačítá nic odjinud.</p></div></footer>
-<script src="{base}status.js" defer></script>
+<script src="{base}status.js?v={ASSET_V['status.js']}" defer></script>
 </body>
 </html>
 """
