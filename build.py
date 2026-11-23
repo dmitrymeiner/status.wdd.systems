@@ -658,7 +658,7 @@ def page(title, desc, main, current, level, generated, base=""):
 <main class="wrap">
 {main}
 </main>
-<footer class="foot"><div class="foot-in"><p>{PROVIDER}</p><p>{CONTACT}</p><p>Stránka běží mimo naše servery, nepoužívá cookies a nenačítá nic odjinud.</p></div></footer>
+<footer class="foot"><div class="foot-in"><div class="foot-row"><p>{PROVIDER}</p><p>{CONTACT}</p><p>Stránka běží mimo naše servery, nepoužívá cookies a nenačítá nic odjinud.</p></div><a class="foot-logo" href="https://wdd.cz/" aria-label="WD&amp;D – wdd.cz">{LOGO}</a></div></footer>
 <script src="{base}status.js?v={ASSET_V['status.js']}" defer></script>
 </body>
 </html>

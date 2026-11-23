@@ -186,10 +186,23 @@ table.kv td:first-child { width: 11rem; color: var(--muted); font-weight: 500; }
 .summary td:first-child { color: var(--paper); font-weight: 550; }
 .summary strong { color: var(--paper); font-weight: 750; font-stretch: 112%; }
 
-/* Footer */
-.foot { border-top: 1px solid var(--rule); }
-.foot-in { max-width: 76rem; margin: 0 auto; padding: 1.8rem 1.5rem 3rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.6rem 2rem; font-size: 0.82rem; color: var(--muted); }
+/* Footer: údaje a pod nimi logo WD&D přes celou šířku (jako na wdd.cz) */
+.foot { border-top: 1px solid var(--rule); overflow-x: clip; }
+.foot-in { max-width: 76rem; margin: 0 auto; padding: 1.8rem 1.5rem clamp(1.25rem, 3vw, 2.5rem); font-size: 0.82rem; color: var(--muted); }
+.foot-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.6rem 2rem; }
 .foot-in p { margin: 0; }
+/* Glyfy loga zabírají 479,3 z 495,3 jednotek šířky (okraj 8 na každé straně). */
+.foot-logo { display: block; margin-top: clamp(1.75rem, 4vw, 3.5rem); color: var(--ink); }
+.foot-logo .logo { display: block; width: calc(100% * 495.3 / 479.3); height: auto; margin: 0 0 0 calc(-100% * 8 / 479.3); fill: var(--ink); overflow: visible; }
+.foot-logo .logo .sq { fill: var(--ink); }
+@media (prefers-reduced-motion: no-preference) {
+  /* Čtvereček v logu dosedne na své místo, jak patička vjíždí do obrazu. */
+  @supports (animation-timeline: view()) {
+    .foot-logo { view-timeline: --flogo block; }
+    .foot-logo .sq { transform-box: fill-box; transform-origin: center; animation: sq-drop linear both; animation-timeline: --flogo; animation-range: entry 10% entry 100%; }
+    @keyframes sq-drop { from { transform: translateY(-150%) rotate(-90deg); } 70% { transform: translateY(6%) rotate(0); } to { transform: none; } }
+  }
+}
 .foot-in b { color: var(--ink); font-weight: 650; }
 
 .print-only { display: none; }
@@ -201,7 +214,7 @@ table.kv td:first-child { width: 11rem; color: var(--muted); font-weight: 500; }
   @page { margin: 16mm 16mm 18mm; }
   :root { --paper: #fff; --surface: #fff; --ink: #000; --muted: #444; --rule: #bbb; --accent: #000; --accent-soft: #fff; }
   html { font-size: 10pt; }
-  .bar, .toc, .print-btn, .crumb, .more { display: none !important; }
+  .bar, .toc, .print-btn, .crumb, .more, .foot-logo { display: none !important; }
   .wrap { padding: 0; max-width: none; }
   .doc-layout { display: block; }
   .doc-head { max-width: none; padding-bottom: 6mm; }
