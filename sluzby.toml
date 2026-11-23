@@ -106,3 +106,9 @@ od = 2026-08-01
 # od = "2026-11-20 03:12"
 # do = "2026-11-20 03:15"
 # duvod = "Falešný poplach monitoringu z jedné lokality, schránky fungovaly."
+
+[[oprava]]
+cast = "weby/web"
+od = "2026-11-23 07:41"
+do = "2026-11-23 07:44"
+duvod = "Monitoring měří náš web wdd.cz, který jsme v tu chvíli přepínali na nové nasazení. Nešlo o výpadek webového serveru."
