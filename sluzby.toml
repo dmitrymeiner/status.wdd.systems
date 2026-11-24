@@ -20,7 +20,7 @@ casove_pasmo = "Europe/Prague"
 [[sluzba]]
 klic = "weby"
 nazev = "Weby"
-popis = "Webový server odpovídá na požadavky HTTP a HTTPS."
+popis = "Webový server odpovídá na požadavky HTTP a HTTPS a weby s PHP a databází fungují."
 pravidlo = "vse"
 sla = true
 od = 2026-08-01
