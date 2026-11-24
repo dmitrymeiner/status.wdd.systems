@@ -46,7 +46,7 @@ Bezpečnostní aktualizace s krátkými restarty (SLA 3.1 a 3.3, např. jádro n
 
 | Část (`sluzby.toml`) | Monitor v UptimeRobotu |
 | --- | --- |
-| weby/web | `wdd.cz` (HTTP, náš web na serveru wdd) |
+| weby/web | ID `802980958` (Keyword na kontrolním webu `health.wdd.systems` na serveru wdd: HTTPS → OpenLiteSpeed → PHP → MariaDB `SELECT 1`, hledá `WDD-OK`, při chybě 503; nasazuje `health-setup` ve wdd-ops). Do 24. 11. 2026 měřil náš web wdd.cz, jenže ten se mění a nasazuje, takže chyba při úpravě webu se ukazovala jako výpadek hostingu |
 | email/smtp | `SMTP mail.wdd.systems:465` (odesílání; příjem na portu 25 se neměří) |
 | email/imap | `IMAP mail.wdd.systems` |
 | dns/ns1, dns/ns2 | `NS1.wdd.systems`, `NS2.wdd.systems` |
