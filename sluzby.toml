@@ -28,7 +28,7 @@ od = 2026-08-01
   [[sluzba.cast]]
   klic = "web"
   nazev = "Webový server"
-  monitor = 802980958   # kontrolní web health.wdd.systems na serveru wdd (HTTPS → PHP → MariaDB, hledá WDD-OK); do 24. 11. 2026 měřil wdd.cz
+  monitor = 804788755   # „health.wdd.systems“, Keyword WDD-OK na kontrolním webu na serveru wdd (HTTPS → PHP → MariaDB); od 24. 11. 2026, předtím monitor wdd.cz (ID 802980958)
 
 [[sluzba]]
 klic = "email"
